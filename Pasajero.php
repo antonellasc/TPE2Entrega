@@ -74,5 +74,9 @@ class Pasajero{
     }
 
     // Otros métodos
-    
+    public function darPorcentajeIncremento(){
+        $porcentaje = 0.10;
+        return $porcentaje;
+    }
+
 }
