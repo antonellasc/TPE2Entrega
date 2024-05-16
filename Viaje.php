@@ -99,13 +99,48 @@ class Viaje{
         return $unaCadena;
     }
 
+
+    // 
+    public function hayPasajesDisponibles(){
+        // Implemente la función hayPasajesDisponible() que retorna verdadero si la cantidad de pasajeros
+        // del viaje es menor a la cantidad máxima de pasajeros y falso caso contrario
+        $cantPasajeros = count($this->getPasajeros());
+        $hayPasajes = false;
+        // Si tengo 0 1 2 3 4 5 6 7 8 9 = [10] Pasajeros. El count va a devolver 10 pero el índice va del 0 al 9.
+        if($cantPasajeros < $this->getCantMaxPasajeros()){
+            $hayPasajes = false;
+        }else{
+            $hayPasajes = true;
+        }
+
+        return $hayPasajes;
+    }
+
     // 
     public function venderPasaje($objPasajero){
         // implementar el método venderPasaje($objPasajero) que debe incorporar el pasajero a la colección de pasajeros
         // (solo si hay espacio disponible), actualizar los costos abonados y retornar el costo final que deberá ser abonado por el pasajero.
-        
+        $costoFinalPasajero = 0;
+        $costoViaje = $this->getCostoViaje();
+        $costosAbonados = $this->getCostoAbonadoXPasajeros();
+        $PasajesDisponible = $this->hayPasajesDisponibles();
+        $pasajeros = $this->getPasajeros();
+        $posiblePasajero = $objPasajero;
+        if($PasajesDisponible){
+            $incrementoPasajero = $objPasajero->darPorcentajeIncremento();
+            $costoFinalPasajero = $costoViaje * $incrementoPasajero;
+            $costosAbonados = $costosAbonados + $costoFinalPasajero;
+            $pasajeros[] = $posiblePasajero;
+            $this->setPasajeros($pasajeros);
+            $this->setAbonadoXPasajeros($costosAbonados);
+        }else{
+            echo "No se pudo realizar la compra. No hay más lugares disponibles. \n";
+        }
+
+        return $costoFinalPasajero;
     }
 
+    
     // Funciones utilizadas en las del menú
     public function buscarPasajero($documento){
         // Busca, por medio del nro de documento, si el pasajero ya existe en la colección. Retorna un indice que nos indicará la posición en la que el pasajero se encuentra dentro
