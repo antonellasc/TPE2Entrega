@@ -6,14 +6,18 @@ class Viaje{
     private $cantidadMax;
     private $arrayPasajeros;
     private $objResponsableV;
+    private $costoViaje;
+    private $abonadoPorPasajeros;
 
     // Constructor
-    public function __construct($codigo_viaje, $destinoViaje, $cantMaximaPasajeros, $unResponsableV){
+    public function __construct($codigo_viaje, $destinoViaje, $cantMaximaPasajeros, $unResponsableV, $costo_Viaje, $costoAbonadoXPasajeros){
         $this->codigoViaje = $codigo_viaje;
         $this->destino = $destinoViaje;
         $this->cantidadMax = $cantMaximaPasajeros;
         $this->arrayPasajeros = [];
         $this->objResponsableV = $unResponsableV;
+        $this->costoViaje = $costo_Viaje;
+        $this->abonadoPorPasajeros = $costoAbonadoXPasajeros;
         
     }
 
@@ -38,6 +42,14 @@ class Viaje{
         return $this->objResponsableV;
     }
 
+    public function getCostoViaje(){
+        return $this->costoViaje;
+    }
+
+    public function getCostoAbonadoXPasajeros(){
+        return $this->abonadoPorPasajeros;
+    }
+
     // Método de acceso : set
     public function setCodigoViaje($codigo_viaje){
         $this->codigoViaje = $codigo_viaje;
@@ -59,10 +71,19 @@ class Viaje{
         $this->objResponsableV = $unResponsableV;
     }
 
+    public function setCostoViaje($costo_Viaje){
+        $this->costoViaje = $costo_Viaje;
+    }
+
+    public function setAbonadoXPasajeros($costoAbonadoXPasajeros){
+        $this->abonadoPorPasajeros = $costoAbonadoXPasajeros;
+    }
+
     // Método __toString
     public function __toString(){
         return "Código del viaje: " . $this->getCodigoViaje() . "\n" . "Destino del viaje: " . $this->getDestino() . "\n" . "Cantidad máxima de pasajeros: " . $this->getCantMaxPasajeros() . 
-        "\n" . "Pasajeros/as: \n" . $this->mostrarColeccion($this->getPasajeros()) . "\n" . "Datos del responsable del viaje: \n" . $this->getResponsableV() . "\n";  
+        "\n" . "Pasajeros/as: \n" . $this->mostrarColeccion($this->getPasajeros()) . "\n" . "Datos del responsable del viaje: \n" . $this->getResponsableV() . "\n" . 
+        "Costo del viaje: " . $this->getCostoViaje() . "\n" . "Costo abonado por pasajeros: " . $this->getCostoAbonadoXPasajeros() . "\n";  
     }
 
     // Otros métodos
@@ -76,6 +97,13 @@ class Viaje{
             $unaCadena = $unaCadena . $articulo_nro . ": \n" . $unArticulo . "\n";
         }
         return $unaCadena;
+    }
+
+    // 
+    public function venderPasaje($objPasajero){
+        // implementar el método venderPasaje($objPasajero) que debe incorporar el pasajero a la colección de pasajeros
+        // (solo si hay espacio disponible), actualizar los costos abonados y retornar el costo final que deberá ser abonado por el pasajero.
+        
     }
 
     // Funciones utilizadas en las del menú
