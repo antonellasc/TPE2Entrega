@@ -83,7 +83,7 @@ class Viaje{
     public function __toString(){
         return "Código del viaje: " . $this->getCodigoViaje() . "\n" . "Destino del viaje: " . $this->getDestino() . "\n" . "Cantidad máxima de pasajeros: " . $this->getCantMaxPasajeros() . 
         "\n" . "Pasajeros/as: \n" . $this->mostrarColeccion($this->getPasajeros()) . "\n" . "Datos del responsable del viaje: \n" . $this->getResponsableV() . "\n" . 
-        "Costo del viaje: " . $this->getCostoViaje() . "\n" . "Costo abonado por pasajeros: " . $this->getCostoAbonadoXPasajeros() . "\n";  
+        "Costo del viaje: $" . $this->getCostoViaje() . "\n" . "Costo total abonado por pasajeros: $" . $this->getCostoAbonadoXPasajeros() . "\n";  
     }
 
     // Otros métodos
@@ -134,13 +134,13 @@ class Viaje{
             $this->setPasajeros($pasajeros);
             $this->setAbonadoXPasajeros($costosAbonados);
         }else{
-            echo "No se pudo realizar la compra. No hay más lugares disponibles. \n";
+            $costoFinalPasajero = -1;
         }
 
         return $costoFinalPasajero;
     }
 
-    
+
     // Funciones utilizadas en las del menú
     public function buscarPasajero($documento){
         // Busca, por medio del nro de documento, si el pasajero ya existe en la colección. Retorna un indice que nos indicará la posición en la que el pasajero se encuentra dentro
@@ -183,7 +183,8 @@ class Viaje{
         echo "| 3) Modificar los datos del viaje.                    |\n";
         echo "| 4) Modificar los datos de un pasajero.               |\n";
         echo "| 5) Modificar los datos del responsable del viaje.    |\n";
-        echo "| 6) Salir.                                            |\n";
+        echo "| 6) Vender pasaje.                                    |\n";
+        echo "| 7) Salir.                                            |\n";
         echo "|                                                      |\n";
         echo "|                                                      |\n";
         echo " ______________________________________________________\n";
@@ -195,6 +196,94 @@ class Viaje{
     //
 
     // Menú cargar información
+    public function cargarPasajeroPorVentaPasaje(){
+        $cantPasajeros = count($this->getPasajeros());
+        $nro_asiento = $cantPasajeros + 1;
+        $nroTicket = $cantPasajeros + 1;
+        echo "¿Qué tipo de pasaje desea? Ingrese el número de la opción elegida: \n";
+        echo "1) Estandar. \n";
+        echo "2) Necesidades especiales. \n";
+        echo "3) VIP. \n";
+        $opcTipoPasaje = trim(fgets(STDIN));
+            switch($opcTipoPasaje){
+                case 1:
+                    echo "Ingrese el nombre del pasajero:\n";
+                    $nombrePasajero = trim(fgets(STDIN));
+                    echo "Ingrese el apellido del pasajero:\n";
+                    $apellidoPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el dni del pasajero:\n";
+                    $dniPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el número de teléfono del pasajero:\n";
+                    $telefonoPasajero = trim(fgets(STDIN));
+                    $nuevoPasajero = new Pasajero($nombrePasajero, $apellidoPasajero, $dniPasajero, $telefonoPasajero, $nro_asiento, $nroTicket);
+                    $retorna = $this->venderPasaje($nuevoPasajero);
+                    if($retorna != -1){
+                        echo "La venta se ha realizado con éxito! El costo final del pasajero es: $" . $retorna . "\n";
+                    }else{
+                        echo "No se pudo realizar la compra. No hay más lugares disponibles. \n";
+                    }
+                break;
+                case 2:
+                    echo "Ingrese el nombre del pasajero:\n";
+                    $nombrePasajero = trim(fgets(STDIN));
+                    echo "Ingrese el apellido del pasajero:\n";
+                    $apellidoPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el dni del pasajero:\n";
+                    $dniPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el número de teléfono del pasajero:\n";
+                    $telefonoPasajero = trim(fgets(STDIN));
+                    $nuevoPasajeroNecEsp = new PasajeroNecesidadesEspeciales($nombrePasajero, $apellidoPasajero, $dniPasajero, $telefonoPasajero, $nro_asiento, $nroTicket, false, false, false);
+                    echo "¿Necesita silla de ruedas? si/no\n";
+                    $resp1 = strtolower(trim(fgets(STDIN)));
+                    if($resp1 == "si"){
+                        $nec1 = true;
+                        $nuevoPasajeroNecEsp->setSillaRuedasReq($nec1);
+                    }
+                    echo "¿Necesita asistencia al embarque? si/no\n";
+                    $resp2 = strtolower(trim(fgets(STDIN)));
+                    if($resp2 == "si"){
+                        $nec2 = true;
+                        $nuevoPasajeroNecEsp->setAsistEmbarqueReq($nec2);
+                    }
+                    echo "¿Necesita alguna comida especial? si/no \n";
+                    $resp3 = strtolower(trim(fgets(STDIN)));
+                    if($resp3 == "si"){
+                        $nec3 = true;
+                        $nuevoPasajeroNecEsp->setComidaEspecialReq($nec3);
+                    }
+                    $retorna = $this->venderPasaje($nuevoPasajeroNecEsp);
+                    if($retorna != -1){
+                        echo "La venta se ha realizado con éxito! El costo final del pasajero es: $" . $retorna . "\n";
+                    }else{
+                        echo "No se pudo realizar la compra. No hay más lugares disponibles. \n";
+                    }
+                break;
+                case 3:
+                    echo "Ingrese el nombre del pasajero:\n";
+                    $nombrePasajero = trim(fgets(STDIN));
+                    echo "Ingrese el apellido del pasajero:\n";
+                    $apellidoPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el dni del pasajero:\n";
+                    $dniPasajero = trim(fgets(STDIN));
+                    echo "Ingrese el número de teléfono del pasajero:\n";
+                    $telefonoPasajero = trim(fgets(STDIN));
+                    echo "Ingrese su número de viajero frecuente: \n";
+                    $nroViajeroFrec = trim(fgets(STDIN));
+                    echo "Ingrese el número de su cantidad de millas acumuladas: \n";
+                    $cantMillasAc = trim(fgets(STDIN));
+                    $nuevoPasajeroVIP = new PasajeroVIP($nombrePasajero, $apellidoPasajero, $dniPasajero, $telefonoPasajero, $nroViajeroFrec, $nro_asiento, $nroTicket, $cantMillasAc);
+                    $retorna = $this->venderPasaje($nuevoPasajeroVIP);
+                    if($retorna != -1){
+                        echo "La venta se ha realizado con éxito! El costo final del pasajero es: $" . $retorna . "\n";
+                    }else{
+                        echo "No se pudo realizar la compra. No hay más lugares disponibles. \n";
+                    }
+                break;
+
+
+            }
+    }
+
     public function cargarInformacionViaje(){
         echo " ______________________________________________________\n";
         echo "|      -- Cargando información del viaje... --         |\n";
@@ -489,9 +578,11 @@ class Viaje{
     //         case 5:
     //             $opcMenuResp = $this->opcionesModificarResponsable();
     //             $this->modificarInfoResponsable($opcMenuResp);
+    //         case 6:
+    //              $this->cargarPasajeroPorVentaPasaje();
     //     }
             
-    // } while($opcion != 6);
+    // } while($opcion != 7);
 
 
 
