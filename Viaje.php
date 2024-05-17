@@ -10,11 +10,11 @@ class Viaje{
     private $abonadoPorPasajeros;
 
     // Constructor
-    public function __construct($codigo_viaje, $destinoViaje, $cantMaximaPasajeros, $unResponsableV, $costo_Viaje, $costoAbonadoXPasajeros){
+    public function __construct($codigo_viaje, $destinoViaje, $cantMaximaPasajeros, $arrayPasajeros, $unResponsableV, $costo_Viaje, $costoAbonadoXPasajeros){
         $this->codigoViaje = $codigo_viaje;
         $this->destino = $destinoViaje;
         $this->cantidadMax = $cantMaximaPasajeros;
-        $this->arrayPasajeros = [];
+        $this->arrayPasajeros = $arrayPasajeros;
         $this->objResponsableV = $unResponsableV;
         $this->costoViaje = $costo_Viaje;
         $this->abonadoPorPasajeros = $costoAbonadoXPasajeros;
@@ -81,12 +81,29 @@ class Viaje{
 
     // Método __toString
     public function __toString(){
-        return "Código del viaje: " . $this->getCodigoViaje() . "\n" . "Destino del viaje: " . $this->getDestino() . "\n" . "Cantidad máxima de pasajeros: " . $this->getCantMaxPasajeros() . 
-        "\n" . "Pasajeros/as: \n" . $this->mostrarColeccion($this->getPasajeros()) . "\n" . "Datos del responsable del viaje: \n" . $this->getResponsableV() . "\n" . 
-        "Costo del viaje: $" . $this->getCostoViaje() . "\n" . "Costo total abonado por pasajeros: $" . $this->getCostoAbonadoXPasajeros() . "\n";  
+        return "Código del viaje: " . $this->getCodigoViaje() . "\n" .
+                "Destino del viaje: " . $this->getDestino() . "\n" .
+                "Cantidad máxima de pasajeros: " . $this->getCantMaxPasajeros() . "\n" . 
+                "Pasajeros/as: \n" . $this->mostrarPasajeros() . "\n" . 
+                "Datos del responsable del viaje: \n" . $this->getResponsableV() . "\n" . 
+                "Costo del viaje: $" . $this->getCostoViaje() . "\n" .
+                "Costo total abonado por pasajeros: $" . $this->getCostoAbonadoXPasajeros() . "\n";
     }
 
     // Otros métodos
+    public function mostrarPasajeros(){
+        // Método para mostrar una colección de pasajeros
+        $colPasajeros = $this->getPasajeros();
+        $pasajero_nro = 0;
+        $unaCadenaPasajeros = "";
+        for($i = 0; $i < count($colPasajeros); $i++){
+            $pasajero_nro++;
+            $unPasajero = $colPasajeros[$i];
+            $unaCadenaPasajeros = $unaCadenaPasajeros . "Pasajero " . $pasajero_nro . ": \n" . $unPasajero . "\n";
+        }
+        return $unaCadenaPasajeros;
+    }
+
     public function mostrarColeccion($unaColeccion){
         // Método para mostrar una colección
         $articulo_nro = 0;
@@ -108,9 +125,9 @@ class Viaje{
         $hayPasajes = false;
         // Si tengo 0 1 2 3 4 5 6 7 8 9 = [10] Pasajeros. El count va a devolver 10 pero el índice va del 0 al 9.
         if($cantPasajeros < $this->getCantMaxPasajeros()){
-            $hayPasajes = false;
-        }else{
             $hayPasajes = true;
+        }else{
+            $hayPasajes = false;
         }
 
         return $hayPasajes;
@@ -128,7 +145,7 @@ class Viaje{
         $posiblePasajero = $objPasajero;
         if($PasajesDisponible){
             $incrementoPasajero = $objPasajero->darPorcentajeIncremento();
-            $costoFinalPasajero = $costoViaje * $incrementoPasajero;
+            $costoFinalPasajero = $costoViaje + ($costoViaje * $incrementoPasajero);
             $costosAbonados = $costosAbonados + $costoFinalPasajero;
             $pasajeros[] = $posiblePasajero;
             $this->setPasajeros($pasajeros);
@@ -150,7 +167,7 @@ class Viaje{
         $i = 0;
         while($i < count($this->getPasajeros()) && !$encontrado){
             $unPasajero = $arrayPasajeros[$i];
-            if($unPasajero->getNroDocu() === $documento){
+            if($unPasajero->getNroDocu() == $documento){
                 $encontrado = true;
             }else{
                 $i++;
@@ -177,8 +194,8 @@ class Viaje{
     // Menu principal
     public function mostrarMenu(){
         echo " ______________________________________________________\n";
-        echo "|             -- Menú principal --                     \n|";
-        echo "| 1) Mostrar información del viaje.                    \n|";
+        echo "|             -- Menú principal --                     |\n";
+        echo "| 1) Mostrar información del viaje.                    |\n";
         echo "| 2) Cargar información del viaje.                     |\n";
         echo "| 3) Modificar los datos del viaje.                    |\n";
         echo "| 4) Modificar los datos de un pasajero.               |\n";
@@ -294,8 +311,8 @@ class Viaje{
         $nuevoCodigoViaje = trim(fgets(STDIN));
         $nuevoDestino = trim(fgets(STDIN));
         $nuevaCantMax = trim(fgets(STDIN));
-        $colecPasajeros = cargarPasajeros();
-        $objResponsable = cargarResponsable();
+        $colecPasajeros = $this->cargarPasajeros();
+        $objResponsable = $this->cargarResponsable();
         $this->setCodigoViaje($nuevoCodigoViaje);
         $this->setDestino($nuevoDestino);
         $this->setCantMaxPasajeros($nuevaCantMax);
@@ -432,10 +449,10 @@ class Viaje{
             echo "Ingrese el dni del pasajero al que quiere modificar su información:\n";
             $dniPasajero = trim(fgets(STDIN));
             $aPasajero = $this->buscarPasajero($dniPasajero);
-            if($aPasajero != -1){
+            if($aPasajero !== -1){
                 $unPasajero = $pasajeros[$aPasajero];
                 $opcMenuPasaj= $this->opcionesModificarPasajero();
-                switch($opcMenuPasaj()){
+                switch($opcMenuPasaj){
                     // el parametro del switch debería ser una opción del menú principal
                     case 1:
                         echo $unPasajero->getNombre() . " es el nombre actual \n";
@@ -452,11 +469,11 @@ class Viaje{
                         echo "Se cambio correctamente a " . $unPasajero->getApellido() . "\n";
                     break;
                     case 3:
-                        echo $unPasajero->getTelefono() . " es el telefono actual \n";
+                        echo $unPasajero->getNroTelefono() . " es el telefono actual \n";
                         echo "Se cambiara a: ";
                         $nuevoTelefono = trim(fgets(STDIN));
-                        $unPasajero->setTelefono($nuevoTelefono);
-                        echo "Se cambio correctamente a " . $unPasajero->getTelefono() . "\n";
+                        $unPasajero->setNroTelefono($nuevoTelefono);
+                        echo "Se cambio correctamente a " . $unPasajero->getNroTelefono() . "\n";
                     break;
                     case 4:
                         echo $unPasajero->getNombre() . " es el nombre actual \n";
@@ -465,7 +482,7 @@ class Viaje{
                         echo $unPasajero->getApellido() . " es el apellido actual \n";
                         echo "Se cambiara a: ";
                         $nuevoApellido = trim(fgets(STDIN));
-                        echo $unPasajero->getTelefono() . " es el telefono actual \n";
+                        echo $unPasajero->getNroTelefono() . " es el telefono actual \n";
                         echo "Se cambiara a: ";
                         $nuevoTelefono = trim(fgets(STDIN));
                         $unPasajero->modificarPasajero($nuevoNombre,$nuevoApellido,$nuevoTelefono);
@@ -496,7 +513,7 @@ class Viaje{
 
         public function modificarInfoResponsable($opcModificarResponsable){
             $responsable = $this->getResponsableV();
-            switch($opcModificarResponsable()){
+            switch($opcModificarResponsable){
                 // Aca tambien iria una opcion del menú principal
                 case 1:
                     echo $responsable->getNroEmpleado() . " es el numero de empleado \n";
@@ -556,34 +573,6 @@ class Viaje{
             $responsable->setNombreResponsable($nombreEmpleado);
             $responsable->setApellidoResponsable($apellidoEmpleado);
         }
-
-
-
-    // do {
-    //     $opcion = mostrarMenu();
-    //     switch($opcion){
-    //         case 1:
-    //             $this->__toString();
-    //             break;
-    //         case 2:
-    //             $this->cargarInformacionViaje();
-    //             break;
-    //         case 3:
-    //             $opcionMenViaje = opcionesModificarDatosViaje();
-    //             $this->modificarInfoViaje($opcionMenViaje);
-    //             break;
-    //         case 4:
-    //             $this->modificarInfoPasajeros(); 
-    //             break;
-    //         case 5:
-    //             $opcMenuResp = $this->opcionesModificarResponsable();
-    //             $this->modificarInfoResponsable($opcMenuResp);
-    //         case 6:
-    //              $this->cargarPasajeroPorVentaPasaje();
-    //     }
-            
-    // } while($opcion != 7);
-
 
 
 }

@@ -50,8 +50,11 @@ class ResponsableV{
 
     // Función __toString
     public function __toString(){
-        return "Nombre responsable del viaje: " . $this->getNombre() . "\n" . "Apellido responsable del viaje: " . $this->getApellido() . "\n" . 
-        "Número de empleado: " . $this->getNroEmpleado() . "\n" . "Número licencia: " . $this->getNroLicencia() . "\n";
+        $cadenaResp = "Nombre responsable del viaje: " . $this->getNombre() . "\n" . 
+                "Apellido responsable del viaje: " . $this->getApellido() . "\n" . 
+                "Número de empleado: " . $this->getNroEmpleado() . "\n" . 
+                "Número licencia: " . $this->getNroLicencia() . "\n";
+                return $cadenaResp;
     }
 
 
